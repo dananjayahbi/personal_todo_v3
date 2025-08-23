@@ -1,0 +1,7 @@
+# FastAPI Server Requirements
+# Dependencies for the FastAPI notification service
+
+fastapi>=0.68.0
+uvicorn>=0.15.0
+requests>=2.25.0
+python-telegram-bot>=20.0
