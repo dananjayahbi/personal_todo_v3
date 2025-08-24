@@ -8,7 +8,7 @@ import os
 from PySide6.QtWidgets import QListWidget, QListWidgetItem, QWidget, QVBoxLayout, QLabel, QCheckBox, QHBoxLayout
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QDrag, QPixmap, QPainter
-from datetime import datetime
+from datetime import datetime, timedelta
 
 # Add parent directory to path for imports
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -36,10 +36,10 @@ class TaskListItem(QWidget):
     def _setup_ui(self) -> None:
         """Setup the user interface for the task item."""
         layout = QHBoxLayout()
-        layout.setContentsMargins(12, 8, 12, 8)
-        layout.setSpacing(10)
+        layout.setContentsMargins(20, 15, 20, 15)
+        layout.setSpacing(15)
         
-        # Checkbox for completion status
+        # Checkbox for completion status with modern styling
         self.checkbox = QCheckBox()
         self.checkbox.setChecked(self.task.status == 'completed')
         self.checkbox.toggled.connect(self._on_checkbox_toggled)
@@ -48,78 +48,192 @@ class TaskListItem(QWidget):
                 background-color: transparent;
             }
             QCheckBox::indicator {
-                width: 18px;
-                height: 18px;
-                border-radius: 3px;
-                border: 2px solid #ccc;
+                width: 20px;
+                height: 20px;
+                border-radius: 4px;
+                border: 2px solid #bdbdbd;
                 background-color: white;
+            }
+            QCheckBox::indicator:hover {
+                border-color: #2196f3;
             }
             QCheckBox::indicator:checked {
                 background-color: #4caf50;
                 border: 2px solid #4caf50;
-                image: url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTQiIGhlaWdodD0iMTQiIHZpZXdCb3g9IjAgMCAxNCAxNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTExLjY2NjcgMy41TDUuMjUgOS45MTY2N0wyLjMzMzM3IDciIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+Cjwvc3ZnPgo=);
+                image: url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHZpZXdCb3g9IjAgMCAxNiAxNiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEzIDUuNUw2LjUgMTJMMyA4LjUiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iMi4yIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KPC9zdmc+Cg==);
             }
         """)
         layout.addWidget(self.checkbox)
         
         # Task content layout
         content_layout = QVBoxLayout()
-        content_layout.setSpacing(4)
+        content_layout.setSpacing(6)
         content_layout.setContentsMargins(0, 0, 0, 0)
         
-        # Task title
+        # Task title with improved styling
         self.title_label = QLabel(self.task.title)
-        self.title_label.setStyleSheet("""
+        title_style = """
             QLabel {
-                font-weight: bold; 
-                font-size: 14px;
-                color: #333;
+                font-weight: 600; 
+                font-size: 16px;
+                color: #212121;
                 background-color: transparent;
+                font-family: 'Segoe UI', Arial, sans-serif;
             }
-        """)
+        """
+        
+        # Add strikethrough for completed tasks
+        if self.task.status == 'completed':
+            title_style = """
+                QLabel {
+                    font-weight: 600; 
+                    font-size: 16px;
+                    color: #9e9e9e;
+                    background-color: transparent;
+                    text-decoration: line-through;
+                    font-family: 'Segoe UI', Arial, sans-serif;
+                }
+            """
+        
+        self.title_label.setStyleSheet(title_style)
         self.title_label.setWordWrap(True)
         content_layout.addWidget(self.title_label)
         
         # Task description (if exists)
         if self.task.description:
             self.desc_label = QLabel(self.task.description)
-            self.desc_label.setStyleSheet("""
+            desc_style = """
                 QLabel {
-                    color: #666; 
-                    font-size: 12px;
+                    color: #757575; 
+                    font-size: 14px;
                     background-color: transparent;
+                    font-family: 'Segoe UI', Arial, sans-serif;
                 }
-            """)
+            """
+            if self.task.status == 'completed':
+                desc_style = """
+                    QLabel {
+                        color: #bdbdbd; 
+                        font-size: 14px;
+                        background-color: transparent;
+                        text-decoration: line-through;
+                        font-family: 'Segoe UI', Arial, sans-serif;
+                    }
+                """
+            self.desc_label.setStyleSheet(desc_style)
             self.desc_label.setWordWrap(True)
             content_layout.addWidget(self.desc_label)
         
-        # Due date (if exists)
+        # Due date with better formatting and status indicators
         if self.task.due_date:
-            due_text = self.task.due_date.strftime("%Y-%m-%d %H:%M")
-            self.due_label = QLabel(f"📅 Due: {due_text}")
+            due_text = self.task.due_date.strftime("%b %d, %Y at %I:%M %p")
             
-            # Color code based on due status
-            if self.task.is_overdue():
-                style = "color: #d32f2f; font-size: 11px; background-color: transparent; font-weight: bold;"
-            elif self.task.is_due_soon():
-                style = "color: #f57c00; font-size: 11px; background-color: transparent; font-weight: bold;"
+            # Determine due status
+            now = datetime.now()
+            if self.task.due_date < now and self.task.status == 'active':
+                # Overdue
+                due_display = f"🔴 Overdue: {due_text}"
+                due_color = "#f44336"
+            elif self.task.due_date < now + timedelta(hours=24) and self.task.status == 'active':
+                # Due soon
+                due_display = f"🟡 Due Soon: {due_text}"
+                due_color = "#ff9800"
             else:
-                style = "color: #666; font-size: 11px; background-color: transparent;"
+                # Normal
+                due_display = f"📅 Due: {due_text}"
+                due_color = "#757575"
             
-            self.due_label.setStyleSheet(f"QLabel {{ {style} }}")
+            if self.task.status == 'completed':
+                due_color = "#bdbdbd"
+            
+            self.due_label = QLabel(due_display)
+            self.due_label.setStyleSheet(f"""
+                QLabel {{
+                    color: {due_color}; 
+                    font-size: 13px;
+                    font-weight: 500;
+                    background-color: transparent;
+                    font-family: 'Segoe UI', Arial, sans-serif;
+                }}
+            """)
             content_layout.addWidget(self.due_label)
         
         layout.addLayout(content_layout)
-        layout.addStretch()
         
-        # Set overall styling
+        # Status badge on the right
+        status_layout = QVBoxLayout()
+        status_layout.setAlignment(Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignRight)
+        
+        if self.task.status == 'completed':
+            status_badge = QLabel("✓ Completed")
+            status_badge.setStyleSheet("""
+                QLabel {
+                    background-color: #4caf50;
+                    color: white;
+                    padding: 4px 8px;
+                    border-radius: 12px;
+                    font-size: 11px;
+                    font-weight: 600;
+                    font-family: 'Segoe UI', Arial, sans-serif;
+                }
+            """)
+        elif self.task.status == 'cancelled':
+            status_badge = QLabel("✗ Cancelled")
+            status_badge.setStyleSheet("""
+                QLabel {
+                    background-color: #f44336;
+                    color: white;
+                    padding: 4px 8px;
+                    border-radius: 12px;
+                    font-size: 11px;
+                    font-weight: 600;
+                    font-family: 'Segoe UI', Arial, sans-serif;
+                }
+            """)
+        else:
+            # Check if overdue
+            if (self.task.due_date and 
+                self.task.due_date < datetime.now() and 
+                self.task.status == 'active'):
+                status_badge = QLabel("⚠ Overdue")
+                status_badge.setStyleSheet("""
+                    QLabel {
+                        background-color: #f44336;
+                        color: white;
+                        padding: 4px 8px;
+                        border-radius: 12px;
+                        font-size: 11px;
+                        font-weight: 600;
+                        font-family: 'Segoe UI', Arial, sans-serif;
+                    }
+                """)
+            else:
+                status_badge = QLabel("📝 Active")
+                status_badge.setStyleSheet("""
+                    QLabel {
+                        background-color: #2196f3;
+                        color: white;
+                        padding: 4px 8px;
+                        border-radius: 12px;
+                        font-size: 11px;
+                        font-weight: 600;
+                        font-family: 'Segoe UI', Arial, sans-serif;
+                    }
+                """)
+        
+        status_layout.addWidget(status_badge)
+        layout.addLayout(status_layout)
+        
+        # Set overall styling with modern card appearance
         self.setStyleSheet("""
             TaskListItem {
                 background-color: transparent;
                 border: none;
+                border-radius: 8px;
+                margin: 2px;
             }
             TaskListItem:hover {
-                background-color: #f8f9fa;
+                background-color: #f5f5f5;
             }
         """)
         

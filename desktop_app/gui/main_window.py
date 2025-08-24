@@ -7,9 +7,10 @@ import sys
 import os
 from PySide6.QtWidgets import (QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, 
                                QPushButton, QLineEdit, QComboBox, QLabel, 
-                               QMessageBox, QStatusBar, QSplitter)
-from PySide6.QtCore import Qt, Signal, QTimer
-from PySide6.QtGui import QFont, QAction
+                               QMessageBox, QStatusBar, QSplitter, QFrame,
+                               QScrollArea, QGraphicsDropShadowEffect)
+from PySide6.QtCore import Qt, Signal, QTimer, QPropertyAnimation, QEasingCurve
+from PySide6.QtGui import QFont, QAction, QColor
 from typing import List
 
 # Add parent directory to path for imports
@@ -44,13 +45,55 @@ class MainWindow(QMainWindow):
         self.current_filter = "all"
         
         self.setWindowTitle("Personal Todo App")
-        self.setMinimumSize(700, 500)
-        self.resize(900, 650)
+        self.setMinimumSize(900, 600)
+        self.resize(1100, 750)
         
-        # Set application style
+        # Set modern application style
         self.setStyleSheet("""
             QMainWindow {
+                background-color: #fafafa;
+                color: #212121;
+            }
+            QLabel {
+                color: #424242;
+                font-family: 'Segoe UI', Arial, sans-serif;
+            }
+            QLineEdit, QTextEdit, QComboBox {
                 background-color: #ffffff;
+                border: 2px solid #e0e0e0;
+                border-radius: 8px;
+                padding: 10px 12px;
+                font-size: 14px;
+                font-family: 'Segoe UI', Arial, sans-serif;
+                color: #212121;
+            }
+            QLineEdit:focus, QTextEdit:focus, QComboBox:focus {
+                border-color: #2196f3;
+                outline: none;
+            }
+            QLineEdit:hover, QTextEdit:hover, QComboBox:hover {
+                border-color: #bdbdbd;
+            }
+            QPushButton {
+                background-color: #2196f3;
+                color: white;
+                border: none;
+                padding: 12px 20px;
+                border-radius: 8px;
+                font-weight: 600;
+                font-size: 14px;
+                font-family: 'Segoe UI', Arial, sans-serif;
+                min-height: 16px;
+            }
+            QPushButton:hover {
+                background-color: #1976d2;
+            }
+            QPushButton:pressed {
+                background-color: #0d47a1;
+            }
+            QPushButton:disabled {
+                background-color: #e0e0e0;
+                color: #9e9e9e;
             }
         """)
         
@@ -68,7 +111,7 @@ class MainWindow(QMainWindow):
         central_widget = QWidget()
         central_widget.setStyleSheet("""
             QWidget {
-                background-color: #ffffff;
+                background-color: #fafafa;
             }
         """)
         self.setCentralWidget(central_widget)
@@ -82,8 +125,11 @@ class MainWindow(QMainWindow):
         splitter = QSplitter(Qt.Orientation.Horizontal)
         splitter.setStyleSheet("""
             QSplitter::handle {
-                background-color: #ddd;
-                width: 2px;
+                background-color: #e0e0e0;
+                width: 1px;
+            }
+            QSplitter::handle:hover {
+                background-color: #bdbdbd;
             }
         """)
         main_layout.addWidget(splitter)
@@ -97,15 +143,17 @@ class MainWindow(QMainWindow):
         splitter.addWidget(content_area)
         
         # Set splitter proportions
-        splitter.setSizes([250, 550])
+        splitter.setSizes([300, 700])
         
         # Status bar
         self.status_bar = QStatusBar()
         self.status_bar.setStyleSheet("""
             QStatusBar {
-                background-color: #f0f0f0;
-                border-top: 1px solid #ccc;
-                color: #333;
+                background-color: #ffffff;
+                border-top: 1px solid #e0e0e0;
+                color: #757575;
+                font-size: 12px;
+                padding: 8px;
             }
         """)
         self.setStatusBar(self.status_bar)
@@ -114,37 +162,59 @@ class MainWindow(QMainWindow):
     def _create_sidebar(self) -> QWidget:
         """Create sidebar with filters and controls."""
         sidebar = QWidget()
-        sidebar.setMaximumWidth(250)
-        sidebar.setMinimumWidth(200)
+        sidebar.setMaximumWidth(300)
+        sidebar.setMinimumWidth(250)
         sidebar.setStyleSheet("""
             QWidget {
-                background-color: #f8f9fa;
-                border-right: 1px solid #dee2e6;
+                background-color: #ffffff;
+                border-right: 1px solid #e0e0e0;
             }
             QLabel {
                 background-color: transparent;
+                color: #424242;
+                font-weight: 600;
             }
             QComboBox {
-                background-color: white;
-                border: 1px solid #ced4da;
-                border-radius: 4px;
-                padding: 5px;
+                background-color: #ffffff;
+                border: 2px solid #e0e0e0;
+                border-radius: 8px;
+                padding: 8px 12px;
                 min-height: 20px;
+                font-size: 14px;
+            }
+            QComboBox:focus {
+                border-color: #2196f3;
+            }
+            QComboBox::drop-down {
+                border: none;
+                width: 30px;
+            }
+            QComboBox::down-arrow {
+                image: none;
+                border-left: 5px solid transparent;
+                border-right: 5px solid transparent;
+                border-top: 5px solid #757575;
+                margin-right: 10px;
             }
             QLineEdit {
-                background-color: white;
-                border: 1px solid #ced4da;
-                border-radius: 4px;
-                padding: 5px;
+                background-color: #ffffff;
+                border: 2px solid #e0e0e0;
+                border-radius: 8px;
+                padding: 8px 12px;
                 min-height: 20px;
+                font-size: 14px;
+            }
+            QLineEdit:focus {
+                border-color: #2196f3;
             }
             QPushButton {
                 background-color: #4caf50;
                 color: white;
                 border: none;
-                padding: 8px;
-                border-radius: 4px;
-                font-weight: bold;
+                padding: 12px 16px;
+                border-radius: 8px;
+                font-weight: 600;
+                font-size: 14px;
                 min-height: 20px;
             }
             QPushButton:hover {
@@ -153,22 +223,37 @@ class MainWindow(QMainWindow):
         """)
         
         layout = QVBoxLayout()
-        layout.setContentsMargins(10, 10, 10, 10)
-        layout.setSpacing(10)
+        layout.setContentsMargins(20, 20, 20, 20)
+        layout.setSpacing(15)
         
-        # Title
-        title_label = QLabel("Todo App")
-        title_font = QFont()
-        title_font.setPointSize(16)
-        title_font.setBold(True)
+        # Title with modern styling
+        title_label = QLabel("Personal Todo")
+        title_font = QFont('Segoe UI', 20, QFont.Weight.Bold)
         title_label.setFont(title_font)
+        title_label.setStyleSheet("""
+            QLabel {
+                color: #1976d2;
+                background-color: transparent;
+                margin-bottom: 10px;
+            }
+        """)
         layout.addWidget(title_label)
         
-        layout.addSpacing(20)
+        # Add separator line
+        separator = QFrame()
+        separator.setFrameShape(QFrame.Shape.HLine)
+        separator.setStyleSheet("""
+            QFrame {
+                background-color: #e0e0e0;
+                max-height: 1px;
+                margin: 10px 0;
+            }
+        """)
+        layout.addWidget(separator)
         
-        # Filters
+        # Filters section
         filter_label = QLabel("Filter Tasks")
-        filter_label.setStyleSheet("font-weight: bold; margin-bottom: 5px;")
+        filter_label.setStyleSheet("font-weight: 600; margin-bottom: 5px; font-size: 16px;")
         layout.addWidget(filter_label)
         
         self.filter_combo = QComboBox()
@@ -178,11 +263,11 @@ class MainWindow(QMainWindow):
         self.filter_combo.currentTextChanged.connect(self._on_filter_changed)
         layout.addWidget(self.filter_combo)
         
-        layout.addSpacing(20)
+        layout.addSpacing(10)
         
-        # Search
+        # Search section
         search_label = QLabel("Search")
-        search_label.setStyleSheet("font-weight: bold; margin-bottom: 5px;")
+        search_label.setStyleSheet("font-weight: 600; margin-bottom: 5px; font-size: 16px;")
         layout.addWidget(search_label)
         
         self.search_edit = QLineEdit()
@@ -192,30 +277,31 @@ class MainWindow(QMainWindow):
         
         layout.addSpacing(20)
         
-        # Actions
+        # Actions section
         actions_label = QLabel("Actions")
-        actions_label.setStyleSheet("font-weight: bold; margin-bottom: 5px;")
+        actions_label.setStyleSheet("font-weight: 600; margin-bottom: 5px; font-size: 16px;")
         layout.addWidget(actions_label)
         
-        # Add task button
-        self.add_button = QPushButton("Add New Task")
+        # Add task button with icon
+        self.add_button = QPushButton("➕ Add New Task")
         self.add_button.clicked.connect(self._add_task)
         layout.addWidget(self.add_button)
         
         # Check now button
-        self.check_button = QPushButton("Check Due Tasks")
+        self.check_button = QPushButton("🔍 Check Due Tasks")
         self.check_button.setStyleSheet("""
             QPushButton {
-                background-color: #2196f3;
+                background-color: #ff9800;
                 color: white;
                 border: none;
-                padding: 8px;
-                border-radius: 4px;
-                font-weight: bold;
+                padding: 12px 16px;
+                border-radius: 8px;
+                font-weight: 600;
+                font-size: 14px;
                 min-height: 20px;
             }
             QPushButton:hover {
-                background-color: #1976d2;
+                background-color: #f57c00;
             }
         """)
         self.check_button.clicked.connect(self._force_check)
@@ -231,44 +317,51 @@ class MainWindow(QMainWindow):
         content = QWidget()
         content.setStyleSheet("""
             QWidget {
-                background-color: #ffffff;
+                background-color: #fafafa;
             }
             QLabel {
                 background-color: transparent;
+                color: #424242;
             }
         """)
         layout = QVBoxLayout()
-        layout.setContentsMargins(15, 15, 15, 15)
-        layout.setSpacing(10)
+        layout.setContentsMargins(20, 20, 20, 20)
+        layout.setSpacing(15)
         
-        # Task list header
+        # Task list header with modern styling
         header_layout = QHBoxLayout()
-        header_layout.setSpacing(10)
+        header_layout.setSpacing(15)
         
         self.tasks_label = QLabel("All Tasks")
-        header_font = QFont()
-        header_font.setPointSize(16)
-        header_font.setBold(True)
+        header_font = QFont('Segoe UI', 18, QFont.Weight.Bold)
         self.tasks_label.setFont(header_font)
-        self.tasks_label.setStyleSheet("color: #333; background-color: transparent;")
+        self.tasks_label.setStyleSheet("""
+            QLabel {
+                color: #212121;
+                background-color: transparent;
+                margin-bottom: 5px;
+            }
+        """)
         header_layout.addWidget(self.tasks_label)
         
         header_layout.addStretch()
         
-        # Quick add button
-        quick_add_button = QPushButton("+ Quick Add")
+        # Quick add button with modern styling
+        quick_add_button = QPushButton("✨ Quick Add")
         quick_add_button.setStyleSheet("""
             QPushButton {
-                background-color: #2196F3;
+                background-color: #4caf50;
                 color: white;
                 border: none;
-                padding: 8px 16px;
-                border-radius: 6px;
-                font-weight: bold;
+                padding: 10px 20px;
+                border-radius: 8px;
+                font-weight: 600;
+                font-size: 14px;
                 min-height: 25px;
             }
             QPushButton:hover {
-                background-color: #1976D2;
+                background-color: #45a049;
+                transform: translateY(-1px);
             }
         """)
         quick_add_button.clicked.connect(self._add_task)
@@ -276,41 +369,54 @@ class MainWindow(QMainWindow):
         
         layout.addLayout(header_layout)
         
-        # Task list container with better styling
+        # Task list container with modern card styling
         task_container = QWidget()
         task_container.setStyleSheet("""
             QWidget {
                 background-color: #ffffff;
                 border: 1px solid #e0e0e0;
-                border-radius: 8px;
+                border-radius: 12px;
             }
         """)
+        
+        # Add shadow effect
+        shadow = QGraphicsDropShadowEffect()
+        shadow.setBlurRadius(15)
+        shadow.setXOffset(0)
+        shadow.setYOffset(2)
+        shadow.setColor(QColor(0, 0, 0, 30))
+        task_container.setGraphicsEffect(shadow)
+        
         task_layout = QVBoxLayout(task_container)
         task_layout.setContentsMargins(0, 0, 0, 0)
         
-        # Task list
+        # Task list with modern styling
         self.task_list = DraggableTaskList()
         self.task_list.setStyleSheet("""
             QListWidget {
                 border: none;
-                border-radius: 8px;
+                border-radius: 12px;
                 background-color: #ffffff;
                 outline: none;
+                font-family: 'Segoe UI', Arial, sans-serif;
             }
             QListWidget::item {
-                border-bottom: 1px solid #f0f0f0;
-                padding: 8px;
+                border-bottom: 1px solid #f5f5f5;
+                padding: 0px;
                 margin: 0px;
                 border-radius: 0px;
                 background-color: #ffffff;
             }
             QListWidget::item:selected {
-                background-color: #e3f2fd;
+                background-color: #e8f4fd;
                 border: 1px solid #2196f3;
-                border-radius: 4px;
+                border-radius: 8px;
             }
             QListWidget::item:hover {
                 background-color: #f8f9fa;
+            }
+            QListWidget::item:last {
+                border-bottom: none;
             }
         """)
         task_layout.addWidget(self.task_list)
