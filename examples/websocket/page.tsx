@@ -1,121 +1,161 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { io } from 'socket.io-client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
 type Message = {
-  text: string;
+  text?: string;
+  message?: string;
   senderId: string;
   timestamp: string;
+  type?: string;
 }
 
-export default function SocketDemo() {
+export default function RealtimeDemo() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputMessage, setInputMessage] = useState('');
-  const [socket, setSocket] = useState<any>(null);
   const [isConnected, setIsConnected] = useState(false);
+  const [eventSource, setEventSource] = useState<EventSource | null>(null);
 
   useEffect(() => {
-    const socketInstance = io({
-      path: '/api/socketio',
-    });
+    // Create EventSource for Server-Sent Events
+    const es = new EventSource('/api/realtime');
+    setEventSource(es);
 
-    setSocket(socketInstance);
-
-    socketInstance.on('connect', () => {
+    es.onopen = () => {
       setIsConnected(true);
-    });
+      console.log('Connected to real-time stream');
+    };
 
-    socketInstance.on('disconnect', () => {
+    es.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        setMessages(prev => [...prev, data]);
+      } catch (error) {
+        console.error('Error parsing message:', error);
+      }
+    };
+
+    es.onerror = () => {
       setIsConnected(false);
-    });
+      console.log('Connection lost');
+    };
 
-    socketInstance.on('message', (msg: Message) => {
-      setMessages(prev => [...prev, msg]);
-    });
-
+    // Cleanup on unmount
     return () => {
-      socketInstance.disconnect();
+      es.close();
+      setEventSource(null);
+      setIsConnected(false);
     };
   }, []);
 
-  const sendMessage = () => {
-    if (socket && inputMessage.trim()) {
-      setMessages(prev => [...prev, {
-        text: inputMessage.trim(),
-        senderId: socket.id || 'user',
-        timestamp: new Date().toISOString()
-      }]);
-      socket.emit('message', {
-        text: inputMessage.trim(),
-        senderId: socket.id || 'user',
-        timestamp: new Date().toISOString()
-      });
-      setInputMessage('');
-    }
-  };
+  const sendMessage = async () => {
+    if (!inputMessage.trim()) return;
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      sendMessage();
+    try {
+      const response = await fetch('/api/realtime', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          text: inputMessage,
+          senderId: 'user-' + Math.random().toString(36).substr(2, 9),
+        }),
+      });
+
+      if (response.ok) {
+        setInputMessage('');
+      }
+    } catch (error) {
+      console.error('Error sending message:', error);
     }
   };
 
   return (
-    <div className="container mx-auto p-4 max-w-2xl">
-      <Card>
+    <div className="container mx-auto p-6 max-w-4xl">
+      <Card className="mb-6">
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
-            WebSocket Demo
-            <span className={`text-sm px-2 py-1 rounded ${isConnected ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+            Real-time Demo (Server-Sent Events)
+            <span className={`px-2 py-1 rounded text-sm ${
+              isConnected ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+            }`}>
               {isConnected ? 'Connected' : 'Disconnected'}
             </span>
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <ScrollArea className="h-80 w-full border rounded-md p-4">
-            <div className="space-y-2">
-              {messages.length === 0 ? (
-                <p className="text-gray-500 text-center">No messages yet</p>
-              ) : (
-                messages.map((msg, index) => (
-                  <div key={index} className="border-b pb-2 last:border-b-0">
-                    <div className="flex justify-between items-start">
-                      <div className="flex-1">
-                        <p className="text-sm font-medium text-gray-700">
-                          {msg.senderId}
-                        </p>
-                        <p className="text-gray-900">{msg.text}</p>
-                      </div>
-                      <span className="text-xs text-gray-500">
-                        {new Date(msg.timestamp).toLocaleTimeString()}
-                      </span>
-                    </div>
-                  </div>
-                ))
-              )}
+        <CardContent>
+          <p className="text-gray-600 mb-4">
+            This demo shows real-time communication using Server-Sent Events (SSE) instead of WebSockets.
+            Perfect for Vercel deployment!
+          </p>
+          
+          <div className="space-y-4">
+            <div className="flex gap-2">
+              <Input
+                value={inputMessage}
+                onChange={(e) => setInputMessage(e.target.value)}
+                placeholder="Type your message..."
+                onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
+                disabled={!isConnected}
+              />
+              <Button onClick={sendMessage} disabled={!isConnected || !inputMessage.trim()}>
+                Send
+              </Button>
             </div>
-          </ScrollArea>
 
-          <div className="flex space-x-2">
-            <Input
-              value={inputMessage}
-              onChange={(e) => setInputMessage(e.target.value)}
-              onKeyPress={handleKeyPress}
-              placeholder="Type a message..."
-              disabled={!isConnected}
-              className="flex-1"
-            />
-            <Button 
-              onClick={sendMessage} 
-              disabled={!isConnected || !inputMessage.trim()}
-            >
-              Send
-            </Button>
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Messages</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ScrollArea className="h-64 w-full">
+                  {messages.length === 0 ? (
+                    <p className="text-gray-500 text-center py-4">No messages yet...</p>
+                  ) : (
+                    <div className="space-y-2">
+                      {messages.map((msg, index) => (
+                        <div key={index} className="p-2 bg-gray-50 rounded">
+                          <div className="flex justify-between items-center mb-1">
+                            <span className="font-medium text-sm text-blue-600">
+                              {msg.senderId}
+                            </span>
+                            <span className="text-xs text-gray-500">
+                              {new Date(msg.timestamp).toLocaleTimeString()}
+                            </span>
+                          </div>
+                          <p className="text-sm">{msg.text || msg.message}</p>
+                          {msg.type && (
+                            <span className="text-xs bg-blue-100 text-blue-800 px-1 rounded">
+                              {msg.type}
+                            </span>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </ScrollArea>
+              </CardContent>
+            </Card>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>About This Implementation</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-2 text-sm text-gray-600">
+            <p>✅ <strong>Vercel Compatible:</strong> Uses Server-Sent Events instead of WebSockets</p>
+            <p>✅ <strong>Real-time Updates:</strong> Supports live message broadcasting</p>
+            <p>✅ <strong>No Custom Server:</strong> Uses Next.js API routes</p>
+            <p>✅ <strong>Automatic Reconnection:</strong> Browser handles reconnection automatically</p>
+            <p>✅ <strong>Lightweight:</strong> No additional dependencies required</p>
           </div>
         </CardContent>
       </Card>

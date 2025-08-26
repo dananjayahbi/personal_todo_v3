@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { PrismaClient } from '@prisma/client'
+import { hashPassword } from '@/lib/password'
 
 const prisma = new PrismaClient()
 
@@ -73,11 +74,14 @@ export async function POST(request: NextRequest) {
     // Remove the used OTP
     otpStore.delete(email)
 
+    // Hash the new password
+    const hashedNewPassword = await hashPassword(newPassword)
+
     // Update password in database
     await prisma.user.update({
       where: { email },
       data: {
-        password: newPassword,
+        password: hashedNewPassword,
       },
     })
     

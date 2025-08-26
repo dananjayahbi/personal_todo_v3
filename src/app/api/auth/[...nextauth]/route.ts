@@ -1,6 +1,7 @@
 import NextAuth from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials"
 import { db } from "@/lib/db"
+import { verifyPassword } from "@/lib/password"
 
 const handler = NextAuth({
   providers: [
@@ -30,11 +31,12 @@ const handler = NextAuth({
             return null
           }
 
-          // In a real app, you'd hash passwords and compare hashes
-          // For this demo, we'll check the plain password
-          console.log("Checking password:", credentials.password, "against stored:", user.password)
-          if (user.password !== credentials.password) {
-            console.log("Password mismatch")
+          // Verify hashed password
+          const isPasswordValid = await verifyPassword(credentials.password, user.password)
+          console.log("Password verification result:", isPasswordValid)
+          
+          if (!isPasswordValid) {
+            console.log("Password verification failed")
             return null
           }
 
