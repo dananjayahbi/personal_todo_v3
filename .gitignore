@@ -39,13 +39,13 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Generated files
 local-*
 .claude
 .z-ai-config
 dev.log
 test
 prompt
-
-server.log
 
 todo.db*

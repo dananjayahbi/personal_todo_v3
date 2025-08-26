@@ -139,3 +139,49 @@ This scaffold includes a comprehensive set of modern web development tools:
 ---
 
 Built with ❤️ for the developer community. Supercharged by [Z.ai](https://chat.z.ai) 🚀
+
+## 🚀 Deployment Guide
+
+### Prerequisites
+1. **Database Setup**: Create a Supabase project at [supabase.com](https://supabase.com)
+2. **Environment Variables**: Update your `.env` file with production values
+
+### For Vercel Deployment
+
+1. **Prepare Environment Variables**:
+   ```bash
+   # Add these to your Vercel project environment variables
+   DATABASE_URL="your-supabase-database-url"
+   NEXTAUTH_URL="https://your-domain.vercel.app"
+   NEXTAUTH_SECRET="your-secure-secret"
+   EMAIL_HOST_USER="your-email@gmail.com"
+   GMAIL_APP_PASSWORD="your-app-password"
+   ```
+
+2. **Database Migration**:
+   ```bash
+   # Run this once to set up your production database
+   npx prisma migrate deploy
+   npx prisma db seed
+   ```
+
+3. **Deploy to Vercel**:
+   ```bash
+   npm run build  # Test locally first
+   vercel --prod  # Deploy to production
+   ```
+
+### Key Features for Production
+
+✅ **Vercel Optimized**: No custom server needed  
+✅ **PostgreSQL**: Production-ready database with Supabase  
+✅ **Real-time Updates**: Server-Sent Events instead of WebSockets  
+✅ **Type Safety**: Full TypeScript support  
+✅ **Auto-scaling**: Serverless functions with proper timeout configuration  
+
+### Build Process
+- **`npm run build`**: Generates Prisma client and builds Next.js app
+- **`npm run postinstall`**: Automatically generates Prisma client on deployment
+- **`npm run db:migrate`**: Deploys database migrations (production-safe)
+
+---
