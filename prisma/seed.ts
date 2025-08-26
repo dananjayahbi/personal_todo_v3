@@ -1,9 +1,13 @@
 import { PrismaClient } from '@prisma/client'
+import bcrypt from 'bcryptjs'
 
 const prisma = new PrismaClient()
 
 async function main() {
   console.log('Seeding database...')
+
+  // Hash the default password
+  const hashedPassword = await bcrypt.hash('password', 12)
 
   // Create priorities
   const priorities = await Promise.all([
@@ -36,14 +40,14 @@ async function main() {
     }),
   ])
 
-  // Create a sample user (personal account)
+    // Create user with hashed password
   const user = await prisma.user.upsert({
     where: { email: 'dananjayahbi@gmail.com' },
     update: {},
     create: {
       email: 'dananjayahbi@gmail.com',
       name: 'Isuru Dananjaya',
-      password: 'password',
+      password: hashedPassword,
     },
   })
 

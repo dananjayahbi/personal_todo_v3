@@ -1,187 +1,210 @@
-# 🚀 Welcome to Z.ai Code Scaffold
+# Personal Todo V3
 
-A modern, production-ready web application scaffold powered by cutting-edge technologies, designed to accelerate your development with [Z.ai](https://chat.z.ai)'s AI-powered coding assistance.
+A modern, full-stack task management application built with Next.js 15, TypeScript, and PostgreSQL. Features real-time updates, drag-and-drop functionality, and comprehensive project management capabilities.
 
-## ✨ Technology Stack
+## Features
 
-This scaffold provides a robust foundation built with:
+### Core Functionality
+- **Task Management**: Create, update, delete, and organize tasks with priorities
+- **Project Organization**: Group tasks into projects with custom colors and descriptions
+- **Kanban Board**: Drag-and-drop interface with TODO, IN_PROGRESS, and DONE columns
+- **Priority System**: High, Medium, and Low priority levels with visual indicators
+- **Due Dates**: Set and track task deadlines with calendar integration
+- **Comments**: Collaborate with threaded comments on tasks
+- **File Attachments**: Upload and manage files associated with tasks
 
-### 🎯 Core Framework
-- **⚡ Next.js 15** - The React framework for production with App Router
-- **📘 TypeScript 5** - Type-safe JavaScript for better developer experience
-- **🎨 Tailwind CSS 4** - Utility-first CSS framework for rapid UI development
+### User Experience
+- **Real-time Updates**: Server-sent events for live collaboration
+- **Responsive Design**: Optimized for desktop and mobile devices
+- **Dark/Light Mode**: Theme switching with system preference detection
+- **Intuitive UI**: Clean, modern interface built with shadcn/ui components
+- **Fast Performance**: Optimized for speed with Next.js 15 and modern React patterns
 
-### 🧩 UI Components & Styling
-- **🧩 shadcn/ui** - High-quality, accessible components built on Radix UI
-- **🎯 Lucide React** - Beautiful & consistent icon library
-- **🌈 Framer Motion** - Production-ready motion library for React
-- **🎨 Next Themes** - Perfect dark mode in 2 lines of code
+### Security & Authentication
+- **Secure Authentication**: NextAuth.js with credential-based login
+- **Password Security**: bcrypt hashing with 12 salt rounds
+- **Session Management**: Secure session handling and automatic logout
+- **Data Protection**: SQL injection prevention with Prisma ORM
 
-### 📋 Forms & Validation
-- **🎣 React Hook Form** - Performant forms with easy validation
-- **✅ Zod** - TypeScript-first schema validation
+## Technology Stack
 
-### 🔄 State Management & Data Fetching
-- **🐻 Zustand** - Simple, scalable state management
-- **🔄 TanStack Query** - Powerful data synchronization for React
-- **🌐 Axios** - Promise-based HTTP client
+### Frontend
+- **Next.js 15** - React framework with App Router
+- **TypeScript** - Type-safe development
+- **Tailwind CSS** - Utility-first styling
+- **shadcn/ui** - Modern UI component library
+- **React Hook Form** - Form handling with validation
+- **Zod** - Schema validation
+- **Framer Motion** - Smooth animations
 
-### 🗄️ Database & Backend
-- **🗄️ Prisma** - Next-generation Node.js and TypeScript ORM
-- **🔐 NextAuth.js** - Complete open-source authentication solution
+### Backend
+- **PostgreSQL** - Production database (Supabase)
+- **Prisma** - Type-safe database ORM
+- **NextAuth.js** - Authentication framework
+- **bcryptjs** - Password hashing
+- **Server-Sent Events** - Real-time updates
 
-### 🎨 Advanced UI Features
-- **📊 TanStack Table** - Headless UI for building tables and datagrids
-- **🖱️ DND Kit** - Modern drag and drop toolkit for React
-- **📊 Recharts** - Redefined chart library built with React and D3
-- **🖼️ Sharp** - High performance image processing
+### Tools & Utilities
+- **DND Kit** - Drag and drop functionality
+- **TanStack Query** - Server state management
+- **Zustand** - Client state management
+- **Date-fns** - Date manipulation
+- **Lucide React** - Icon library
 
-### 🌍 Internationalization & Utilities
-- **🌍 Next Intl** - Internationalization library for Next.js
-- **📅 Date-fns** - Modern JavaScript date utility library
-- **🪝 ReactUse** - Collection of essential React hooks for modern development
-
-## 🎯 Why This Scaffold?
-
-- **🏎️ Fast Development** - Pre-configured tooling and best practices
-- **🎨 Beautiful UI** - Complete shadcn/ui component library with advanced interactions
-- **🔒 Type Safety** - Full TypeScript configuration with Zod validation
-- **📱 Responsive** - Mobile-first design principles with smooth animations
-- **🗄️ Database Ready** - Prisma ORM configured for rapid backend development
-- **🔐 Auth Included** - NextAuth.js for secure authentication flows
-- **📊 Data Visualization** - Charts, tables, and drag-and-drop functionality
-- **🌍 i18n Ready** - Multi-language support with Next Intl
-- **🚀 Production Ready** - Optimized build and deployment settings
-- **🤖 AI-Friendly** - Structured codebase perfect for AI assistance
-
-## 🚀 Quick Start
-
-```bash
-# Install dependencies
-npm install
-
-# Start development server
-npm run dev
-
-# Build for production
-npm run build
-
-# Start production server
-npm start
-```
-
-Open [http://localhost:3000](http://localhost:3000) to see your application running.
-
-## 🤖 Powered by Z.ai
-
-This scaffold is optimized for use with [Z.ai](https://chat.z.ai) - your AI assistant for:
-
-- **💻 Code Generation** - Generate components, pages, and features instantly
-- **🎨 UI Development** - Create beautiful interfaces with AI assistance  
-- **🔧 Bug Fixing** - Identify and resolve issues with intelligent suggestions
-- **📝 Documentation** - Auto-generate comprehensive documentation
-- **🚀 Optimization** - Performance improvements and best practices
-
-Ready to build something amazing? Start chatting with Z.ai at [chat.z.ai](https://chat.z.ai) and experience the future of AI-powered development!
-
-## 📁 Project Structure
-
-```
-src/
-├── app/                 # Next.js App Router pages
-├── components/          # Reusable React components
-│   └── ui/             # shadcn/ui components
-├── hooks/              # Custom React hooks
-└── lib/                # Utility functions and configurations
-```
-
-## 🎨 Available Features & Components
-
-This scaffold includes a comprehensive set of modern web development tools:
-
-### 🧩 UI Components (shadcn/ui)
-- **Layout**: Card, Separator, Aspect Ratio, Resizable Panels
-- **Forms**: Input, Textarea, Select, Checkbox, Radio Group, Switch
-- **Feedback**: Alert, Toast (Sonner), Progress, Skeleton
-- **Navigation**: Breadcrumb, Menubar, Navigation Menu, Pagination
-- **Overlay**: Dialog, Sheet, Popover, Tooltip, Hover Card
-- **Data Display**: Badge, Avatar, Calendar
-
-### 📊 Advanced Data Features
-- **Tables**: Powerful data tables with sorting, filtering, pagination (TanStack Table)
-- **Charts**: Beautiful visualizations with Recharts
-- **Forms**: Type-safe forms with React Hook Form + Zod validation
-
-### 🎨 Interactive Features
-- **Animations**: Smooth micro-interactions with Framer Motion
-- **Drag & Drop**: Modern drag-and-drop functionality with DND Kit
-- **Theme Switching**: Built-in dark/light mode support
-
-### 🔐 Backend Integration
-- **Authentication**: Ready-to-use auth flows with NextAuth.js
-- **Database**: Type-safe database operations with Prisma
-- **API Client**: HTTP requests with Axios + TanStack Query
-- **State Management**: Simple and scalable with Zustand
-
-### 🌍 Production Features
-- **Internationalization**: Multi-language support with Next Intl
-- **Image Optimization**: Automatic image processing with Sharp
-- **Type Safety**: End-to-end TypeScript with Zod validation
-- **Essential Hooks**: 100+ useful React hooks with ReactUse for common patterns
-
-## 🤝 Get Started with Z.ai
-
-1. **Clone this scaffold** to jumpstart your project
-2. **Visit [chat.z.ai](https://chat.z.ai)** to access your AI coding assistant
-3. **Start building** with intelligent code generation and assistance
-4. **Deploy with confidence** using the production-ready setup
-
----
-
-Built with ❤️ for the developer community. Supercharged by [Z.ai](https://chat.z.ai) 🚀
-
-## 🚀 Deployment Guide
+## Getting Started
 
 ### Prerequisites
-1. **Database Setup**: Create a Supabase project at [supabase.com](https://supabase.com)
-2. **Environment Variables**: Update your `.env` file with production values
+- Node.js 18+ and npm
+- PostgreSQL database (Supabase account recommended)
+- Git
 
-### For Vercel Deployment
+### Installation
 
-1. **Prepare Environment Variables**:
+1. **Clone the repository**
    ```bash
-   # Add these to your Vercel project environment variables
-   DATABASE_URL="your-supabase-database-url"
-   NEXTAUTH_URL="https://your-domain.vercel.app"
-   NEXTAUTH_SECRET="your-secure-secret"
-   EMAIL_HOST_USER="your-email@gmail.com"
-   GMAIL_APP_PASSWORD="your-app-password"
+   git clone https://github.com/dananjayahbi/personal_todo_v3.git
+   cd personal_todo_v3
    ```
 
-2. **Database Migration**:
+2. **Install dependencies**
    ```bash
-   # Run this once to set up your production database
+   npm install
+   ```
+
+3. **Environment Setup**
+   ```bash
+   cp .env.example .env
+   ```
+   
+   Update `.env` with your configuration:
+   ```env
+   DATABASE_URL="postgresql://username:password@host:5432/database"
+   NEXTAUTH_URL=http://localhost:3000
+   NEXTAUTH_SECRET=your-secure-secret
+   EMAIL_HOST_USER=your-email@gmail.com
+   GMAIL_APP_PASSWORD=your-app-password
+   ```
+
+4. **Database Setup**
+   ```bash
+   npx prisma migrate deploy
+   npm run db:seed
+   ```
+
+5. **Start Development Server**
+   ```bash
+   npm run dev
+   ```
+
+Visit `http://localhost:3000` and login with:
+- Email: `dananjayahbi@gmail.com`
+- Password: `password`
+
+## Deployment
+
+### Vercel (Recommended)
+
+1. **Connect Repository**
+   - Import project to Vercel
+   - Connect to GitHub repository
+
+2. **Environment Variables**
+   Add these to your Vercel project:
+   ```
+   DATABASE_URL=your-supabase-connection-string
+   NEXTAUTH_URL=https://your-domain.vercel.app
+   NEXTAUTH_SECRET=your-production-secret
+   EMAIL_HOST_USER=your-email@gmail.com
+   GMAIL_APP_PASSWORD=your-app-password
+   ```
+
+3. **Database Migration**
+   ```bash
    npx prisma migrate deploy
    npx prisma db seed
    ```
 
-3. **Deploy to Vercel**:
+4. **Deploy**
    ```bash
-   npm run build  # Test locally first
-   vercel --prod  # Deploy to production
+   vercel --prod
    ```
 
-### Key Features for Production
+### Other Platforms
+The application is compatible with any Node.js hosting platform:
+- Railway
+- Render
+- DigitalOcean App Platform
+- AWS
+- Google Cloud Platform
 
-✅ **Vercel Optimized**: No custom server needed  
-✅ **PostgreSQL**: Production-ready database with Supabase  
-✅ **Real-time Updates**: Server-Sent Events instead of WebSockets  
-✅ **Type Safety**: Full TypeScript support  
-✅ **Auto-scaling**: Serverless functions with proper timeout configuration  
+## Project Structure
 
-### Build Process
-- **`npm run build`**: Generates Prisma client and builds Next.js app
-- **`npm run postinstall`**: Automatically generates Prisma client on deployment
-- **`npm run db:migrate`**: Deploys database migrations (production-safe)
+```
+src/
+├── app/                    # Next.js App Router pages
+│   ├── api/               # API routes
+│   ├── login/             # Authentication pages
+│   ├── tasks/             # Task management
+│   ├── projects/          # Project management
+│   └── settings/          # User settings
+├── components/            # Reusable UI components
+│   ├── ui/               # shadcn/ui components
+│   ├── task-card.tsx     # Task display component
+│   └── sidebar.tsx       # Navigation sidebar
+├── lib/                   # Utility functions
+│   ├── db.ts             # Database connection
+│   ├── password.ts       # Password utilities
+│   └── utils.ts          # Helper functions
+└── hooks/                 # Custom React hooks
+
+prisma/
+├── schema.prisma          # Database schema
+├── migrations/            # Database migrations
+└── seed.ts               # Initial data seeding
+```
+
+## API Endpoints
+
+### Authentication
+- `POST /api/auth/[...nextauth]` - NextAuth.js authentication
+- `POST /api/auth/change-password` - Password change
+- `POST /api/auth/reset-password` - Password reset
+
+### Tasks
+- `GET /api/tasks` - List user tasks
+- `POST /api/tasks` - Create new task
+- `PUT /api/tasks/[id]` - Update task
+- `DELETE /api/tasks/[id]` - Delete task
+- `POST /api/tasks/batch-update` - Update multiple tasks
+
+### Projects
+- `GET /api/projects` - List user projects
+- `POST /api/projects` - Create new project
+- `PUT /api/projects/[id]` - Update project
+- `DELETE /api/projects/[id]` - Delete project
+
+### Real-time
+- `GET /api/realtime` - Server-sent events stream
+- `POST /api/realtime` - Broadcast real-time updates
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature-name`
+3. Make your changes and commit: `git commit -m 'Add feature'`
+4. Push to the branch: `git push origin feature-name`
+5. Submit a pull request
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Contact
+
+**Developer**: Isuru Dananjaya  
+**Email**: dananjayahbi@gmail.com  
+**GitHub**: [@dananjayahbi](https://github.com/dananjayahbi)
 
 ---
+
+Built with modern web technologies for efficient task management and team collaboration.

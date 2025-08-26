@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
+import { verifyPassword, hashPassword } from '@/lib/password'
 
 export async function POST(request: NextRequest) {
   try {
@@ -35,9 +36,11 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Check current password
-    console.log('Comparing passwords:', { provided: currentPassword, stored: user.password })
-    if (user.password !== currentPassword) {
+    // Verify current password
+    const isCurrentPasswordValid = await verifyPassword(currentPassword, user.password)
+    console.log('Current password verification result:', isCurrentPasswordValid)
+    
+    if (!isCurrentPasswordValid) {
       return NextResponse.json(
         { error: 'Current password is incorrect' },
         { status: 400 }
@@ -46,11 +49,14 @@ export async function POST(request: NextRequest) {
 
     console.log('About to update password for user:', email)
     
+    // Hash the new password
+    const hashedNewPassword = await hashPassword(newPassword)
+    
     // Update password in database
     const updatedUser = await db.user.update({
       where: { email },
       data: {
-        password: newPassword,
+        password: hashedNewPassword,
       },
     })
 
