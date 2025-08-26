@@ -1,8 +1,0 @@
-# Desktop App Requirements
-# Core dependencies for the PySide6-based desktop application
-
-PySide6>=6.5.0
-requests>=2.25.0
-
-# Development dependencies (optional)
-pytest>=7.0.0

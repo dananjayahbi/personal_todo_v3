@@ -1,134 +1,141 @@
-# Personal Todo App v3
+# 🚀 Welcome to Z.ai Code Scaffold
 
-A comprehensive personal todo application with desktop GUI, background notifications, and Telegram integration.
+A modern, production-ready web application scaffold powered by cutting-edge technologies, designed to accelerate your development with [Z.ai](https://chat.z.ai)'s AI-powered coding assistance.
 
-## Features
+## ✨ Technology Stack
 
-- **Desktop Application**: Modern PySide6-based GUI with drag-and-drop task reordering
-- **Background Service**: System tray integration with continuous task monitoring  
-- **Telegram Notifications**: Automated alerts for due and overdue tasks
-- **Local Database**: SQLite database for offline task storage
-- **FastAPI Backend**: Cloud-deployable notification service
-- **CRUD Operations**: Full task management with priority handling
+This scaffold provides a robust foundation built with:
 
-## Architecture
+### 🎯 Core Framework
+- **⚡ Next.js 15** - The React framework for production with App Router
+- **📘 TypeScript 5** - Type-safe JavaScript for better developer experience
+- **🎨 Tailwind CSS 4** - Utility-first CSS framework for rapid UI development
 
-The system consists of two main components:
+### 🧩 UI Components & Styling
+- **🧩 shadcn/ui** - High-quality, accessible components built on Radix UI
+- **🎯 Lucide React** - Beautiful & consistent icon library
+- **🌈 Framer Motion** - Production-ready motion library for React
+- **🎨 Next Themes** - Perfect dark mode in 2 lines of code
 
-1. **Desktop App** (`desktop_app/`): PySide6 GUI application that manages tasks locally
-2. **FastAPI App** (`fastapi_app/`): Cloud notification service that sends Telegram messages
+### 📋 Forms & Validation
+- **🎣 React Hook Form** - Performant forms with easy validation
+- **✅ Zod** - TypeScript-first schema validation
 
-## Quick Start
+### 🔄 State Management & Data Fetching
+- **🐻 Zustand** - Simple, scalable state management
+- **🔄 TanStack Query** - Powerful data synchronization for React
+- **🌐 Axios** - Promise-based HTTP client
 
-### 1. Desktop Application Setup
+### 🗄️ Database & Backend
+- **🗄️ Prisma** - Next-generation Node.js and TypeScript ORM
+- **🔐 NextAuth.js** - Complete open-source authentication solution
+
+### 🎨 Advanced UI Features
+- **📊 TanStack Table** - Headless UI for building tables and datagrids
+- **🖱️ DND Kit** - Modern drag and drop toolkit for React
+- **📊 Recharts** - Redefined chart library built with React and D3
+- **🖼️ Sharp** - High performance image processing
+
+### 🌍 Internationalization & Utilities
+- **🌍 Next Intl** - Internationalization library for Next.js
+- **📅 Date-fns** - Modern JavaScript date utility library
+- **🪝 ReactUse** - Collection of essential React hooks for modern development
+
+## 🎯 Why This Scaffold?
+
+- **🏎️ Fast Development** - Pre-configured tooling and best practices
+- **🎨 Beautiful UI** - Complete shadcn/ui component library with advanced interactions
+- **🔒 Type Safety** - Full TypeScript configuration with Zod validation
+- **📱 Responsive** - Mobile-first design principles with smooth animations
+- **🗄️ Database Ready** - Prisma ORM configured for rapid backend development
+- **🔐 Auth Included** - NextAuth.js for secure authentication flows
+- **📊 Data Visualization** - Charts, tables, and drag-and-drop functionality
+- **🌍 i18n Ready** - Multi-language support with Next Intl
+- **🚀 Production Ready** - Optimized build and deployment settings
+- **🤖 AI-Friendly** - Structured codebase perfect for AI assistance
+
+## 🚀 Quick Start
 
 ```bash
-cd desktop_app
-pip install -r requirements.txt
-python main.py
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+
+# Build for production
+npm run build
+
+# Start production server
+npm start
 ```
 
-On first run, edit the generated `config.json` file with your API settings.
+Open [http://localhost:3000](http://localhost:3000) to see your application running.
 
-### 2. FastAPI Service Setup
+## 🤖 Powered by Z.ai
 
-```bash
-cd fastapi_app
-pip install -r requirements.txt
-cp .env.example .env
-# Edit .env with your Telegram bot token and settings
-python main.py
-```
+This scaffold is optimized for use with [Z.ai](https://chat.z.ai) - your AI assistant for:
 
-### 3. Telegram Bot Setup
+- **💻 Code Generation** - Generate components, pages, and features instantly
+- **🎨 UI Development** - Create beautiful interfaces with AI assistance  
+- **🔧 Bug Fixing** - Identify and resolve issues with intelligent suggestions
+- **📝 Documentation** - Auto-generate comprehensive documentation
+- **🚀 Optimization** - Performance improvements and best practices
 
-1. Create a bot via [@BotFather](https://t.me/BotFather) on Telegram
-2. Get your bot token and chat ID
-3. Add these to your FastAPI `.env` file and desktop `config.json`
+Ready to build something amazing? Start chatting with Z.ai at [chat.z.ai](https://chat.z.ai) and experience the future of AI-powered development!
 
-## Project Structure
+## 📁 Project Structure
 
 ```
-personal_todo_v3/
-├── desktop_app/           # PySide6 desktop application
-│   ├── gui/              # User interface components
-│   ├── models/           # Database models and repositories  
-│   ├── services/         # Background services
-│   ├── config.py         # Configuration management
-│   └── main.py           # Application entry point
-├── fastapi_app/          # FastAPI notification service
-│   ├── routers/          # API route handlers
-│   ├── utils/            # Utility functions
-│   ├── config/           # Configuration settings
-│   └── main.py           # FastAPI application
-└── README.md             # This file
+src/
+├── app/                 # Next.js App Router pages
+├── components/          # Reusable React components
+│   └── ui/             # shadcn/ui components
+├── hooks/              # Custom React hooks
+└── lib/                # Utility functions and configurations
 ```
 
-## Usage
+## 🎨 Available Features & Components
 
-1. **Task Management**: Create, edit, delete, and reorder tasks via drag-and-drop
-2. **Background Monitoring**: App runs in system tray monitoring for due tasks
-3. **Notifications**: Automatic Telegram alerts 15 minutes before due time
-4. **Filters**: View tasks by status (All, Active, Completed, Overdue, Due Soon)
-5. **Search**: Find tasks by title or description
+This scaffold includes a comprehensive set of modern web development tools:
 
-## Configuration
+### 🧩 UI Components (shadcn/ui)
+- **Layout**: Card, Separator, Aspect Ratio, Resizable Panels
+- **Forms**: Input, Textarea, Select, Checkbox, Radio Group, Switch
+- **Feedback**: Alert, Toast (Sonner), Progress, Skeleton
+- **Navigation**: Breadcrumb, Menubar, Navigation Menu, Pagination
+- **Overlay**: Dialog, Sheet, Popover, Tooltip, Hover Card
+- **Data Display**: Badge, Avatar, Calendar
 
-### Desktop App (`config.json`)
-```json
-{
-  "fastapi_url": "http://localhost:8000",
-  "api_key": "your-api-key",
-  "telegram_chat_id": "your-chat-id",
-  "check_interval_minutes": 5,
-  "notification_minutes_ahead": 15
-}
-```
+### 📊 Advanced Data Features
+- **Tables**: Powerful data tables with sorting, filtering, pagination (TanStack Table)
+- **Charts**: Beautiful visualizations with Recharts
+- **Forms**: Type-safe forms with React Hook Form + Zod validation
 
-### FastAPI App (`.env`)
-```
-TELEGRAM_BOT_TOKEN=your-bot-token
-TELEGRAM_CHAT_ID=your-chat-id  
-API_KEY=your-secure-api-key
-DEBUG=false
-PORT=8000
-```
+### 🎨 Interactive Features
+- **Animations**: Smooth micro-interactions with Framer Motion
+- **Drag & Drop**: Modern drag-and-drop functionality with DND Kit
+- **Theme Switching**: Built-in dark/light mode support
 
-## Development
+### 🔐 Backend Integration
+- **Authentication**: Ready-to-use auth flows with NextAuth.js
+- **Database**: Type-safe database operations with Prisma
+- **API Client**: HTTP requests with Axios + TanStack Query
+- **State Management**: Simple and scalable with Zustand
 
-The codebase is modularized with files kept under 150 lines each for maintainability:
+### 🌍 Production Features
+- **Internationalization**: Multi-language support with Next Intl
+- **Image Optimization**: Automatic image processing with Sharp
+- **Type Safety**: End-to-end TypeScript with Zod validation
+- **Essential Hooks**: 100+ useful React hooks with ReactUse for common patterns
 
-- **Models**: Database interaction and task management
-- **Services**: Background monitoring and notification handling
-- **GUI**: User interface components with custom widgets
-- **Config**: Environment and settings management
-- **Utils**: Helper functions and API integrations
+## 🤝 Get Started with Z.ai
 
-## Requirements
+1. **Clone this scaffold** to jumpstart your project
+2. **Visit [chat.z.ai](https://chat.z.ai)** to access your AI coding assistant
+3. **Start building** with intelligent code generation and assistance
+4. **Deploy with confidence** using the production-ready setup
 
-- Python 3.10+
-- PySide6 (for desktop GUI)
-- FastAPI + Uvicorn (for notification service)  
-- SQLite (built-in with Python)
-- Telegram Bot API access
+---
 
-## Deployment
-
-### Desktop App
-Package as executable using PyInstaller:
-```bash
-pip install pyinstaller
-pyinstaller --windowed --onefile main.py
-```
-
-### FastAPI Service
-Deploy to cloud platforms like Heroku, Vercel, or AWS:
-```bash
-# Example for Heroku
-pip install gunicorn
-echo "web: gunicorn main:app -w 4 -k uvicorn.workers.UvicornWorker" > Procfile
-```
-
-## License
-
-MIT License - see LICENSE file for details
+Built with ❤️ for the developer community. Supercharged by [Z.ai](https://chat.z.ai) 🚀
