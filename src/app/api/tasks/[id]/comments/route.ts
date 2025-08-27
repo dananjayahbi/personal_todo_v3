@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
+import { telegramService } from '@/lib/telegram/telegramService';
 
 const prisma = new PrismaClient();
 
@@ -80,6 +81,48 @@ export async function POST(
         }
       }
     });
+
+    // Get the updated task with all comments for Telegram notification
+    const task = await prisma.task.findUnique({
+      where: { id: taskId },
+      include: {
+        project: true,
+        priority: true,
+        attachments: true,
+        comments: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+              }
+            }
+          },
+          orderBy: { createdAt: 'desc' }
+        },
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+      },
+    });
+
+    // Send Telegram notification for task update (comment added)
+    if (task && telegramService.isConfigured()) {
+      try {
+        await telegramService.sendTaskUpdatedNotification(
+          { task },
+          task.telegramMessageId || undefined
+        );
+      } catch (error) {
+        console.error('Failed to send Telegram notification for comment creation:', error);
+        // Don't fail the request if Telegram notification fails
+      }
+    }
 
     return NextResponse.json(comment, { status: 201 });
   } catch (error) {

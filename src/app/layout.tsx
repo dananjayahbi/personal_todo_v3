@@ -5,6 +5,9 @@ import { Toaster } from "@/components/ui/toaster";
 import Providers from "@/components/providers";
 import AuthGuard from "@/components/auth-guard";
 
+// Initialize Telegram services on server startup
+import "@/lib/telegram/init";
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],

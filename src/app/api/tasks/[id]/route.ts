@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { db } from "@/lib/db"
+import { telegramService } from "@/lib/telegram/telegramService"
 
 export async function GET(
   request: NextRequest,
@@ -76,6 +77,30 @@ export async function PUT(
       where: {
         id,
       },
+      include: {
+        project: true,
+        priority: true,
+        attachments: true,
+        comments: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+              }
+            }
+          },
+          orderBy: { createdAt: 'desc' }
+        },
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+      }
     })
 
     if (!existingTask) {
@@ -101,14 +126,14 @@ export async function PUT(
           ...(status && { status }),
           ...(order !== undefined && { order }),
         },
-      })
+      });
 
       // Handle attachments if provided
       if (attachments && Array.isArray(attachments)) {
         // Delete existing attachments
         await prisma.attachment.deleteMany({
           where: { taskId: id }
-        })
+        });
 
         // Create new attachments
         if (attachments.length > 0) {
@@ -121,7 +146,7 @@ export async function PUT(
               size: 0, // Default size, could be passed from frontend
               mimeType: 'application/octet-stream', // Default mime type
             }))
-          })
+          });
         }
       }
 
@@ -152,10 +177,31 @@ export async function PUT(
             },
           },
         },
-      })
-    })
+      });
+    });
 
-    return NextResponse.json(updatedTask)
+    // Send Telegram notification for task update (always send)
+    if (updatedTask && telegramService.isConfigured()) {
+      try {
+        const telegramMessage = await telegramService.sendTaskUpdatedNotification(
+          { task: updatedTask },
+          existingTask.telegramMessageId || undefined
+        );
+        
+        // Update task with new Telegram message ID if a new message was sent
+        if (telegramMessage && !existingTask.telegramMessageId) {
+          await db.task.update({
+            where: { id: updatedTask.id },
+            data: { telegramMessageId: telegramMessage.messageId }
+          });
+        }
+      } catch (error) {
+        console.error('Failed to send Telegram notification for task update:', error);
+        // Don't fail the request if Telegram notification fails
+      }
+    }
+
+    return NextResponse.json(updatedTask);
   } catch (error) {
     console.error("Error updating task:", error)
     return NextResponse.json(

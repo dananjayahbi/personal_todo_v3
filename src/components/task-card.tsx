@@ -3,6 +3,7 @@
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { Checkbox } from "@/components/ui/checkbox"
 import { 
   DropdownMenu,
   DropdownMenuContent,
@@ -54,9 +55,12 @@ interface TaskCardProps {
   onEdit?: (taskId: string) => void
   onMove?: (taskId: string, newStatus: string) => void
   onDelete?: (taskId: string) => void
+  isSelected?: boolean
+  onSelect?: (taskId: string, checked: boolean) => void
+  showSelection?: boolean
 }
 
-export function TaskCard({ task, onClick, onEdit, onMove, onDelete }: TaskCardProps) {
+export function TaskCard({ task, onClick, onEdit, onMove, onDelete, isSelected = false, onSelect, showSelection = false }: TaskCardProps) {
   const getPriorityColor = (priority: { name: string; color: string | null }) => {
     if (priority.color) {
       return `bg-[${priority.color}]/10 text-[${priority.color}] border-[${priority.color}]/20`
@@ -149,8 +153,10 @@ export function TaskCard({ task, onClick, onEdit, onMove, onDelete }: TaskCardPr
 
   return (
     <Card 
-      className="cursor-pointer hover:shadow-md transition-shadow relative overflow-hidden"
-      onClick={() => onClick?.(task.id)}
+      className={`cursor-pointer hover:shadow-md transition-shadow relative overflow-hidden ${
+        isSelected ? 'ring-2 ring-primary' : ''
+      }`}
+      onClick={() => !showSelection && onClick?.(task.id)}
       style={{ 
         backgroundColor: task.project ? getProjectBackgroundColor(task.project) : undefined
       }}
@@ -165,9 +171,22 @@ export function TaskCard({ task, onClick, onEdit, onMove, onDelete }: TaskCardPr
       
       <CardContent className="p-4">
         <div className="flex items-start justify-between mb-2">
-          <h3 className="font-medium text-sm leading-tight flex-1 pr-2">
-            {task.title}
-          </h3>
+          <div className="flex items-start gap-2 flex-1">
+            {showSelection && (
+              <Checkbox
+                checked={isSelected}
+                onCheckedChange={(checked) => onSelect?.(task.id, checked as boolean)}
+                onClick={(e) => e.stopPropagation()}
+                className="mt-1"
+              />
+            )}
+            <h3 
+              className="font-medium text-sm leading-tight flex-1 pr-2"
+              onClick={() => showSelection && onClick?.(task.id)}
+            >
+              {task.title}
+            </h3>
+          </div>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button 

@@ -3,27 +3,24 @@
 import { useState, useEffect } from "react"
 import { useSession } from "next-auth/react"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
+import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Sidebar } from "@/components/sidebar"
 import { TaskCard } from "@/components/task-card"
 import { AddTaskDialog } from "@/components/add-task-dialog"
 import { TaskDetails } from "@/components/task-details"
 import { EditTaskDialog } from "@/components/edit-task-dialog"
 import { ProfileDropdown } from "@/components/profile-dropdown"
+import { BulkActionsBar } from "@/components/bulk-actions-bar"
 import { 
   Plus, 
   Search, 
   Filter,
-  SortAsc,
-  Calendar,
-  User,
-  Tag,
   CheckCircle,
   Clock,
-  AlertCircle
+  AlertCircle,
+  Square,
+  CheckSquare
 } from "lucide-react"
 
 interface Task {
@@ -62,6 +59,8 @@ export default function TasksPage() {
   const [filterProject, setFilterProject] = useState<string>("all")
   const [filterPriority, setFilterPriority] = useState<string>("all")
   const [sortBy, setSortBy] = useState<string>("createdAt")
+  const [selectedTasks, setSelectedTasks] = useState<Set<string>>(new Set())
+  const [isSelectionMode, setIsSelectionMode] = useState(false)
 
   useEffect(() => {
     if (session?.user?.email) {
@@ -217,6 +216,79 @@ export default function TasksPage() {
     setIsTaskDetailsOpen(false)
   }
 
+  const handleTaskSelect = (taskId: string, checked: boolean) => {
+    const newSelected = new Set(selectedTasks)
+    if (checked) {
+      newSelected.add(taskId)
+    } else {
+      newSelected.delete(taskId)
+    }
+    setSelectedTasks(newSelected)
+    
+    // Exit selection mode if no tasks are selected
+    if (newSelected.size === 0) {
+      setIsSelectionMode(false)
+    }
+  }
+
+  const handleSelectAll = () => {
+    if (selectedTasks.size === sortedTasks.length) {
+      // If all are selected, deselect all
+      setSelectedTasks(new Set())
+      setIsSelectionMode(false)
+    } else {
+      // Select all visible tasks
+      setSelectedTasks(new Set(sortedTasks.map(task => task.id)))
+      setIsSelectionMode(true)
+    }
+  }
+
+  const handleBulkDelete = async () => {
+    if (selectedTasks.size === 0) return
+
+    const tasksToDelete = Array.from(selectedTasks)
+    const confirmMessage = `Are you sure you want to delete ${tasksToDelete.length} task${tasksToDelete.length !== 1 ? 's' : ''}? This action cannot be undone.`
+    
+    if (!confirm(confirmMessage)) return
+
+    try {
+      const response = await fetch('/api/tasks/bulk-delete', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ taskIds: tasksToDelete }),
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to delete tasks')
+      }
+
+      const result = await response.json()
+      console.log(result.message)
+      
+      // Clear selection and fetch updated tasks
+      setSelectedTasks(new Set())
+      setIsSelectionMode(false)
+      fetchTasks()
+    } catch (error) {
+      console.error('Error deleting tasks:', error)
+      alert('Failed to delete tasks. Please try again.')
+    }
+  }
+
+  const handleClearSelection = () => {
+    setSelectedTasks(new Set())
+    setIsSelectionMode(false)
+  }
+
+  const toggleSelectionMode = () => {
+    setIsSelectionMode(!isSelectionMode)
+    if (isSelectionMode) {
+      setSelectedTasks(new Set())
+    }
+  }
+
   if (loading) {
     return (
       <div className="flex h-screen bg-background">
@@ -318,6 +390,15 @@ export default function TasksPage() {
             
             <div className="flex items-center gap-2">
               <ProfileDropdown />
+              <Button
+                variant={isSelectionMode ? "default" : "outline"}
+                size="sm"
+                onClick={toggleSelectionMode}
+                className="flex items-center gap-2"
+              >
+                {isSelectionMode ? <CheckSquare className="h-4 w-4" /> : <Square className="h-4 w-4" />}
+                {isSelectionMode ? "Exit Selection" : "Select Tasks"}
+              </Button>
             </div>
           </div>
         </header>
@@ -393,9 +474,31 @@ export default function TasksPage() {
           {/* Task List */}
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <h2 className="text-xl font-semibold">
-                {sortedTasks.length} {sortedTasks.length === 1 ? "Task" : "Tasks"}
-              </h2>
+              <div className="flex items-center gap-4">
+                <h2 className="text-xl font-semibold">
+                  {sortedTasks.length} {sortedTasks.length === 1 ? "Task" : "Tasks"}
+                </h2>
+                {isSelectionMode && sortedTasks.length > 0 && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleSelectAll}
+                    className="flex items-center gap-2"
+                  >
+                    {selectedTasks.size === sortedTasks.length ? (
+                      <>
+                        <CheckSquare className="h-4 w-4" />
+                        Deselect All
+                      </>
+                    ) : (
+                      <>
+                        <Square className="h-4 w-4" />
+                        Select All
+                      </>
+                    )}
+                  </Button>
+                )}
+              </div>
               <Button onClick={() => setIsAddTaskOpen(true)}>
                 <Plus className="h-4 w-4 mr-2" />
                 Add Task
@@ -411,6 +514,9 @@ export default function TasksPage() {
                   onEdit={handleEditTask}
                   onMove={handleMoveTask}
                   onDelete={handleDeleteTask}
+                  isSelected={selectedTasks.has(task.id)}
+                  onSelect={handleTaskSelect}
+                  showSelection={isSelectionMode}
                 />
               ))}
               
@@ -448,8 +554,6 @@ export default function TasksPage() {
         open={isTaskDetailsOpen}
         onOpenChange={setIsTaskDetailsOpen}
         onTaskUpdated={handleTaskUpdated}
-        onTaskDeleted={handleTaskDeleted}
-        onEditTask={handleEditTask}
       />
 
       <EditTaskDialog
@@ -457,6 +561,12 @@ export default function TasksPage() {
         open={isEditTaskOpen}
         onOpenChange={setIsEditTaskOpen}
         onTaskUpdated={handleTaskUpdated}
+      />
+
+      <BulkActionsBar
+        selectedCount={selectedTasks.size}
+        onDelete={handleBulkDelete}
+        onClearSelection={handleClearSelection}
       />
     </div>
   )
