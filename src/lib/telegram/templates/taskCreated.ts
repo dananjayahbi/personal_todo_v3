@@ -20,6 +20,15 @@ export interface TaskCreatedTemplateData {
       originalName: string;
       size?: number | null;
     }[];
+    comments?: {
+      id: string;
+      content: string;
+      createdAt: Date;
+      user: {
+        name?: string | null;
+        email: string;
+      };
+    }[];
     user: {
       name?: string | null;
       email: string;
@@ -38,7 +47,7 @@ export function generateTaskCreatedMessage(data: TaskCreatedTemplateData): strin
   }
   
   message += `👤 **Created by:** ${escapeMarkdown(task.user.name || task.user.email)}\n`;
-  message += `🎯 **Priority:** ${escapeMarkdown(task.priority.name)} (Level ${task.priority.level})\n`;
+  message += `🎯 **Priority:** ${escapeMarkdown(task.priority.name)} \\(Level ${task.priority.level}\\)\n`;
   message += `📊 **Status:** ${escapeMarkdown(task.status.replace('_', ' '))}\n`;
   
   if (task.project) {
@@ -47,19 +56,31 @@ export function generateTaskCreatedMessage(data: TaskCreatedTemplateData): strin
   
   if (task.dueDate) {
     const dueDate = new Date(task.dueDate);
-    message += `⏰ **Due Date:** ${dueDate.toLocaleDateString()} ${dueDate.toLocaleTimeString()}\n`;
+    message += `📅 **Due Date:** ${escapeMarkdown(dueDate.toLocaleDateString())}\n`;
+    message += `⏰ **Due Time:** ${escapeMarkdown(dueDate.toLocaleTimeString())}\n`;
+  }
+  
+  // Comments section
+  if (task.comments && task.comments.length > 0) {
+    message += `\n💬 **Comments \\(${task.comments.length}\\):**\n`;
+    task.comments.forEach((comment, index) => {
+      const commentDate = new Date(comment.createdAt).toLocaleDateString();
+      const userName = comment.user.name || comment.user.email;
+      message += `${index + 1}\\. *${escapeMarkdown(userName)}* \\(${escapeMarkdown(commentDate)}\\): ${escapeMarkdown(comment.content)}\n`;
+    });
+  } else {
+    message += `\n💬 **Comments:** No comments\n`;
   }
   
   if (task.attachments && task.attachments.length > 0) {
-    message += `\n📎 **Attachments (${task.attachments.length}):**\n`;
+    message += `\n📎 **Attachments \\(${task.attachments.length}\\):**\n`;
     task.attachments.forEach((attachment, index) => {
-      const sizeText = attachment.size ? ` (${formatFileSize(attachment.size)})` : '';
-      message += `${index + 1}. ${escapeMarkdown(attachment.originalName)}${sizeText}\n`;
+      const sizeText = attachment.size ? ` \\(${escapeMarkdown(formatFileSize(attachment.size))}\\)` : '';
+      message += `${index + 1}\\. ${escapeMarkdown(attachment.originalName)}${sizeText}\n`;
     });
   }
   
-  message += `\n🆔 **Task ID:** \`${task.id}\``;
-  message += `\n🕒 **Created:** ${new Date().toLocaleString()}`;
+  message += `\n🕒 **Created:** ${escapeMarkdown(new Date().toLocaleString())}`;
   
   return message;
 }

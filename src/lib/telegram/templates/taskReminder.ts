@@ -20,6 +20,15 @@ export interface TaskReminderTemplateData {
       originalName: string;
       size?: number | null;
     }[];
+    comments?: {
+      id: string;
+      content: string;
+      createdAt: Date;
+      user: {
+        name?: string | null;
+        email: string;
+      };
+    }[];
     user: {
       name?: string | null;
       email: string;
@@ -32,7 +41,7 @@ export function generateTaskReminderMessage(data: TaskReminderTemplateData): str
   const { task, hoursOverdue } = data;
   
   let message = `🚨 **TASK OVERDUE REMINDER**\n\n`;
-  message += `⚠️ **This task is ${hoursOverdue} hour(s) overdue!**\n\n`;
+  message += `⚠️ **This task is ${hoursOverdue} hour\\(s\\) overdue\\!**\n\n`;
   
   message += `📝 **Task:** ${escapeMarkdown(task.title)}\n`;
   
@@ -41,7 +50,7 @@ export function generateTaskReminderMessage(data: TaskReminderTemplateData): str
   }
   
   message += `👤 **Assigned to:** ${escapeMarkdown(task.user.name || task.user.email)}\n`;
-  message += `🎯 **Priority:** ${escapeMarkdown(task.priority.name)} (Level ${task.priority.level})\n`;
+  message += `🎯 **Priority:** ${escapeMarkdown(task.priority.name)} \\(Level ${task.priority.level}\\)\n`;
   message += `📊 **Current Status:** ${escapeMarkdown(task.status.replace('_', ' '))}\n`;
   
   if (task.project) {
@@ -51,20 +60,32 @@ export function generateTaskReminderMessage(data: TaskReminderTemplateData): str
   if (task.dueDate) {
     const dueDate = new Date(task.dueDate);
     const now = new Date();
-    message += `⏰ **Was Due:** ${dueDate.toLocaleDateString()} ${dueDate.toLocaleTimeString()}\n`;
-    message += `🕒 **Current Time:** ${now.toLocaleDateString()} ${now.toLocaleTimeString()}\n`;
+    message += `📅 **Was Due:** ${escapeMarkdown(dueDate.toLocaleDateString())}\n`;
+    message += `⏰ **Due Time:** ${escapeMarkdown(dueDate.toLocaleTimeString())}\n`;
+    message += `🕒 **Current Time:** ${escapeMarkdown(now.toLocaleDateString())} ${escapeMarkdown(now.toLocaleTimeString())}\n`;
+  }
+  
+  // Comments section
+  if (task.comments && task.comments.length > 0) {
+    message += `\n💬 **Comments \\(${task.comments.length}\\):**\n`;
+    task.comments.forEach((comment, index) => {
+      const commentDate = new Date(comment.createdAt).toLocaleDateString();
+      const userName = comment.user.name || comment.user.email;
+      message += `${index + 1}\\. *${escapeMarkdown(userName)}* \\(${escapeMarkdown(commentDate)}\\): ${escapeMarkdown(comment.content)}\n`;
+    });
+  } else {
+    message += `\n💬 **Comments:** No comments\n`;
   }
   
   if (task.attachments && task.attachments.length > 0) {
-    message += `\n📎 **Attachments (${task.attachments.length}):**\n`;
+    message += `\n📎 **Attachments \\(${task.attachments.length}\\):**\n`;
     task.attachments.forEach((attachment, index) => {
-      const sizeText = attachment.size ? ` (${formatFileSize(attachment.size)})` : '';
-      message += `${index + 1}. ${escapeMarkdown(attachment.originalName)}${sizeText}\n`;
+      const sizeText = attachment.size ? ` \\(${escapeMarkdown(formatFileSize(attachment.size))}\\)` : '';
+      message += `${index + 1}\\. ${escapeMarkdown(attachment.originalName)}${sizeText}\n`;
     });
   }
   
-  message += `\n🆔 **Task ID:** \`${task.id}\``;
-  message += `\n\n💡 **Please complete this task as soon as possible!**`;
+  message += `\n\n💡 **Please complete this task as soon as possible\\!**`;
   
   return message;
 }

@@ -69,6 +69,18 @@ class TaskReminderService {
           project: true,
           priority: true,
           attachments: true,
+          comments: {
+            include: {
+              user: {
+                select: {
+                  id: true,
+                  name: true,
+                  email: true,
+                }
+              }
+            },
+            orderBy: { createdAt: 'desc' }
+          },
           user: {
             select: {
               id: true,

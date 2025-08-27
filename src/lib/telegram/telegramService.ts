@@ -91,8 +91,9 @@ class TelegramService {
     try {
       console.log('📤 Sending Telegram message...');
       const response = await this.bot.sendMessage(this.chatId, message, {
-        parse_mode: 'Markdown',
+        parse_mode: 'MarkdownV2',
         disable_web_page_preview: true,
+        disable_notification: false,
         ...options
       });
 
@@ -133,8 +134,9 @@ class TelegramService {
       await this.bot.editMessageText(message, {
         chat_id: this.chatId,
         message_id: messageId,
-        parse_mode: 'Markdown',
+        parse_mode: 'MarkdownV2',
         disable_web_page_preview: true,
+        disable_notification: false,
         ...options
       });
       console.log('✅ Telegram message edited successfully');
@@ -193,13 +195,7 @@ class TelegramService {
   ): Promise<TelegramMessage | null> {
     const message = generateTaskUpdatedMessage(data);
     
-    // Check if attachments changed - if so, delete old message and send new one
-    if (data.changes.attachments && previousMessageId) {
-      await this.deleteMessage(previousMessageId);
-      return await this.sendMessage(message);
-    }
-    
-    // Try to edit the existing message first
+    // Always update existing message if we have the message ID
     if (previousMessageId) {
       const editSuccess = await this.editMessage(previousMessageId, message);
       if (editSuccess) {
