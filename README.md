@@ -26,6 +26,14 @@ A modern, full-stack task management application built with Next.js 15, TypeScri
 - **Session Management**: Secure session handling and automatic logout
 - **Data Protection**: SQL injection prevention with Prisma ORM
 
+### Integrations
+- **Telegram Notifications**: Real-time task notifications via Telegram bot
+  - Task creation alerts with full details and attachments
+  - Task update notifications with change tracking
+  - Overdue task reminders at configurable intervals
+  - Smart message editing (updates existing messages when possible)
+  - Attachment change detection (recreates messages when attachments change)
+
 ## Technology Stack
 
 ### Frontend
@@ -48,6 +56,8 @@ A modern, full-stack task management application built with Next.js 15, TypeScri
 - **DND Kit** - Drag and drop functionality
 - **TanStack Query** - Server state management
 - **Zustand** - Client state management
+- **node-telegram-bot-api** - Telegram bot integration
+- **node-cron** - Task reminder scheduling
 - **Date-fns** - Date manipulation
 - **Lucide React** - Icon library
 
@@ -99,6 +109,32 @@ A modern, full-stack task management application built with Next.js 15, TypeScri
 Visit `http://localhost:3000` and login with:
 - Email: `dananjayahbi@gmail.com`
 - Password: `password`
+
+### Telegram Integration Setup (Optional)
+
+To enable Telegram notifications for tasks:
+
+1. **Quick Setup (Recommended)**
+   ```bash
+   node telegram-config.js
+   ```
+   This interactive script will guide you through the entire setup process.
+
+2. **Manual Setup**
+   - Create a bot via @BotFather on Telegram
+   - Get your chat ID
+   - Add to `.env`:
+     ```env
+     TELEGRAM_BOT_TOKEN=your_bot_token_here
+     TELEGRAM_CHAT_ID=your_chat_id_here
+     ```
+   - See `TELEGRAM_SETUP.md` for detailed instructions
+
+3. **Test Integration**
+   ```bash
+   node test_telegram.js
+   ```
+   This tool lets you test different message types and verify your setup.
 
 ## Deployment
 

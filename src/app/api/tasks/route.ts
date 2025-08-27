@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { db } from "@/lib/db"
+import { telegramService } from "@/lib/telegram/telegramService"
 
 export async function GET(request: NextRequest) {
   try {
@@ -165,9 +166,34 @@ export async function POST(request: NextRequest) {
             },
             orderBy: { createdAt: 'desc' }
           },
+          user: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+            }
+          },
         },
       })
     })
+
+    // Send Telegram notification for task creation
+    if (task && telegramService.isConfigured()) {
+      try {
+        const telegramMessage = await telegramService.sendTaskCreatedNotification({ task });
+        
+        // Update task with Telegram message ID if notification was sent
+        if (telegramMessage) {
+          await db.task.update({
+            where: { id: task.id },
+            data: { telegramMessageId: telegramMessage.messageId }
+          });
+        }
+      } catch (error) {
+        console.error('Failed to send Telegram notification for task creation:', error);
+        // Don't fail the request if Telegram notification fails
+      }
+    }
 
     return NextResponse.json(task, { status: 201 })
   } catch (error) {
