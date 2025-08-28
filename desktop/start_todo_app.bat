@@ -1,2 +1,4 @@
 @echo off
-cscript //NoLogo "%~dp0start_todo_app.vbs"
+cd /d "%~dp0"
+cd ..
+start /min "" python desktop\start_silent.py

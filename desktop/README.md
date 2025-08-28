@@ -1,11 +1,13 @@
 # Desktop Launcher for Personal Todo App
 
-This folder contains the desktop launcher for the Personal Todo App, providing a convenient way to run the Next.js application with a system tray icon and hidden terminal.
+This folder contains the desktop launcher for the Personal Todo App, providing a modern PySide6 interface with system tray integration and hidden terminal functionality.
 
 ## Features
 
+- **Modern PySide6 UI**: Native-looking interface with professional styling
 - **System Tray Integration**: Launcher window automatically minimizes to system tray after starting server
 - **Hidden Terminal**: Runs the server in background without showing command prompt windows
+- **Smart Minimize**: Minimize button always hides to system tray (not taskbar)
 - **System Tray Icon**: Provides quick access to app controls from the system tray
 - **Port Management**: Automatically uses port 8087 and handles port conflicts
 - **Process Management**: Properly starts and stops the Next.js server
@@ -28,6 +30,7 @@ This folder contains the desktop launcher for the Personal Todo App, providing a
    - `pystray` - For system tray functionality
    - `Pillow` - For icon image creation
    - `psutil` - For process management
+   - `PySide6` - For modern, native UI components
 
 ## Usage
 
@@ -110,8 +113,11 @@ For the best user experience with no visible terminal windows:
 ## Configuration
 
 The launcher is configured to:
+- Use modern PySide6 interface with native Windows styling
 - Use port 8087 for the Next.js app
 - Run server in hidden terminal mode
+- Automatically minimize to system tray after starting
+- Handle minimize button clicks to hide to tray (not taskbar)
 - Automatically open browser to `http://localhost:8087`
 - Create a blue checkmark icon in the system tray
 - Handle process management automatically

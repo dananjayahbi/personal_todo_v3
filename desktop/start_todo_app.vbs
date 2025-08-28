@@ -3,14 +3,14 @@ Set objShell = CreateObject("WScript.Shell")
 Set objFSO = CreateObject("Scripting.FileSystemObject")
 
 ' Get the directory where this script is located
-Dim currentDir, parentDir, launcherPath
+Dim currentDir, parentDir, wrapperPath
 currentDir = objFSO.GetParentFolderName(WScript.ScriptFullName)
 parentDir = objFSO.GetParentFolderName(currentDir)
-launcherPath = currentDir & "\launcher.py"
+wrapperPath = currentDir & "\start_silent.py"
 
-' Change to parent directory and run the Python launcher silently
+' Change to parent directory and run the silent wrapper
 objShell.CurrentDirectory = parentDir
-objShell.Run "pythonw """ & launcherPath & """", 0, False
+objShell.Run "python """ & wrapperPath & """", 0, False
 
 Set objShell = Nothing
 Set objFSO = Nothing
